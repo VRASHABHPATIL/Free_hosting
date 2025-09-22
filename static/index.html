@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase User Test</title>
+</head>
+<body>
+    <h1>Supabase + FastAPI</h1>
+    <h2>Add User</h2>
+    <form id="userForm">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password">
+        <button type="submit">Add User</button>
+    </form>
+
+    <h2>Health Check</h2>
+    <button id="healthBtn">Check Health</button>
+    <pre id="healthResult"></pre>
+
+    <script>
+        const form = document.getElementById("userForm");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch("/add-user", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            alert(JSON.stringify(data));
+        });
+
+        const healthBtn = document.getElementById("healthBtn");
+        healthBtn.addEventListener("click", async () => {
+            const res = await fetch("/health");
+            const data = await res.json();
+            document.getElementById("healthResult").innerText = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+</html>
