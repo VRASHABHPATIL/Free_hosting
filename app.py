@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 from supabase import create_client
 from dotenv import load_dotenv
+from fastapi.staticfiles import StaticFiles
 import os
 
 # Load environment variables
