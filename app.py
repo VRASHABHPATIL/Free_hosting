@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 from supabase import create_client
@@ -43,10 +43,17 @@ async def add_user(user: User):
     if not user.email:
         raise HTTPException(status_code=400, detail="Email is required")
     try:
-        response = supabase.table("users").insert({"email": user.email, "password": user.password}).execute()
-        if response.error:
-            raise HTTPException(status_code=500, detail=response.error.message)
+        response = supabase.table("users").insert({
+            "email": user.email,
+            "password": user.password
+        }).execute()
+
+        # Check if insertion succeeded
+        if not response.data:
+            raise HTTPException(status_code=500, detail="Failed to insert user")
+
         return {"status": "success", "data": response.data}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
