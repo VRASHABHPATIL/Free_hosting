@@ -1,28 +1,34 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 from supabase import create_client
 from dotenv import load_dotenv
 import os
 
-# Load env variables
+# Load environment variables
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    raise ValueError("Supabase URL or Key not set in environment variables")
+    raise ValueError("SUPABASE_URL or SUPABASE_KEY is missing. Set them in Vercel Environment Variables.")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-app = FastAPI(title="Supabase FastAPI App")
+app = FastAPI(title="Supabase FastAPI + Frontend")
 
-# Pydantic model
+# User model
 class User(BaseModel):
     email: str
     password: str = None
 
-# Health check endpoint
+# Serve frontend
+@app.get("/", response_class=HTMLResponse)
+async def serve_frontend():
+    return FileResponse("static/index.html")
+
+# Health check
 @app.get("/health")
 async def health_check():
     try:
@@ -31,7 +37,7 @@ async def health_check():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Add user endpoint
+# Add user
 @app.post("/add-user")
 async def add_user(user: User):
     if not user.email:
