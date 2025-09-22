@@ -17,6 +17,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = FastAPI(title="Supabase FastAPI + Frontend")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # User model
 class User(BaseModel):
